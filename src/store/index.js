@@ -1,14 +1,8 @@
 import { createStore } from 'vuex'
+import homePage from "./home-page/home"
 
 export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
   modules: {
+    homePage
   }
 })
