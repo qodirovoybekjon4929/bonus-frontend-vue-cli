@@ -1,3 +1,5 @@
+import { Loading } from "quasar"
+
 const state = {
     data: {
         storeMessage: "salom-store"
@@ -8,8 +10,11 @@ const getters = {
 }
 const muattions = {}
 const actions = {
-    getData() {
-        alert(process.env.VUE_APP_BASE_URL)
+    logOut() {
+        Loading.show()
+        localStorage.clear()
+        window.location.reload()
+        Loading.hide()
     }
 }
 
