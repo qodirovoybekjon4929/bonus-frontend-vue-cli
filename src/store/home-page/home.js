@@ -1,20 +1,43 @@
 import { Loading } from "quasar"
+import axios from "../../axios"
 
 const state = {
     data: {
-        storeMessage: "salom-store"
+        users: []
     }
 }
 const getters = {
-    storeMessage: (state) => state.data.storeMessage
+    users: (state) => state.data.users
 }
-const muattions = {}
+const mutations = {
+    SET_USER_DATA: (state, data) => {
+        state.data.users = data
+    }
+}
 const actions = {
     logOut() {
         Loading.show()
         localStorage.clear()
         window.location.reload()
         Loading.hide()
+    },
+    async searchUser({commit}, data) {
+        try {
+            Loading.show()
+            const response = await axios.get("/api/client/get-client-for-bonus", {
+                params: {
+                    client_id: data.form.code,
+                    client_fio: data.form.fullname
+                }
+            })
+            commit("SET_USER_DATA", response.data)
+        } catch(e) {
+            this.$toast.error(e.response.data.message || "Xatolik yuz berdi!", {
+                position: "top-right"
+            })
+        } finally {
+            Loading.hide()
+        }
     }
 }
 
@@ -22,6 +45,6 @@ export default {
     namespaced: true,
     state,
     getters,
-    muattions,
+    mutations,
     actions
 }
