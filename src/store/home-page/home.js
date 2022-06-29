@@ -3,15 +3,27 @@ import axios from "../../axios"
 
 const state = {
     data: {
+        checkDialogData:  {
+            barCode: '',
+            show: false,
+            data: []
+        },
         users: [],
         checkData: {}
     }
 }
 const getters = {
     users: (state) => state.data.users,
-    checkData: (state) => state.data.checkData
+    checkData: (state) => state.data.checkData,
+    checkDialogData: (state) => state.data.checkDialogData
 }
 const mutations = {
+    HIDE_CHECK_DIALOG: (state) => {
+        state.data.checkDialogData.show = false
+    },
+    SHOW_CHECK_DIALOG: (state) => {
+        state.data.checkDialogData.show = true
+    },
     SET_USER_DATA: (state, data) => {
         state.data.users = data
     },
@@ -20,6 +32,12 @@ const mutations = {
     }
 }
 const actions = {
+    hideCheckDialog({commit}) {
+        commit("HIDE_CHECK_DIALOG")
+    },
+    showCheckDialog({commit}) {
+        commit("SHOW_CHECK_DIALOG")
+    },
     logOut() {
         Loading.show()
         localStorage.clear()
@@ -46,17 +64,18 @@ const actions = {
     },
 
     async getCheck({commit}, {data}) {
-        alert(data)
         try {
             Loading.show()
-            const response = await axios.get(`/api/bonuses/get-bonus/${data}`)
+            const response = await axios.get(`/api/bonuses/get-bonus`, {
+                params: {
+                    client_id: data
+                }
+            })
             commit("SET_CHECK_DATA", response.data)
+            commit("SHOW_CHECK_DIALOG")
             return Promise.resolve(response.data)
         }catch(e) {
-            this.$toast.error(e.response?.data?.message || "Xatolik yuz berdi!", {
-                position: "top-right"
-            })
-            return Promise.reject(e)
+            return Promise.reject(e.response?.data?.message)
         } finally {
             Loading.hide()
         }

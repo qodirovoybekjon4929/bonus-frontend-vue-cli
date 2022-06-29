@@ -57,16 +57,22 @@
         </div>
     </div>
 
-    <q-input v-model="barCode" autofocus @keyup.enter="barCodeFunc()" class="bar-code" ref="autoFocus" />
+    <q-input v-model="barCode" autofocus @keyup.enter="showDialog()" class="bar-code" ref="autoFocus" />
+    <check-dialog />
 </template>
 
 <script lang="js">
 import { Loading } from 'quasar'
 import axios from "../../axios"
 import { mapGetters } from "vuex"
+import checkDialog from "../../components/check-dialog/check-dialog.vue"
 
 export default {
     name: "login-page",
+
+    components: {
+        checkDialog
+    },
 
     data() {
         return {
@@ -127,38 +133,13 @@ export default {
         inputFocus() {
             this.$refs.autoFocus.focus()
         },
-        async barCodeFunc() {
+        async showDialog() {
             try {
                 await this.$store.dispatch(`homePage/getCheck`, {
                     data: this.barCode
                 })
-                let winPrint = window.open("", "ABC")
-
-                await winPrint.document.write(`<div>
-                            <div style="width: 250px; height: 300px; border: 1px solid green; margin: auto; text-align: center;">
-                                <div style="margin-top: 10px;">
-                                    <span style="font-weight: bold;">ISHONCH DO'KONLAR TARMOG'I</span>
-                                    <br>
-                                    <span style="font-weight: bold; font-size: 30px;">BONUS</span>
-                                    <br>
-                                    <span>${this.check.date}</span>
-                                    <br>
-                                    <span style="font-weight: bold;">${this.check.client_fio}</span>
-                                    <br>
-                                    <br>
-                                    <span style="font-weight: bold; font-size: 18px;">${this.check.bonus}</span>
-                                    <br>
-                                    <br>
-                                    <img alt='bar-code' src='https://barcode.tec-it.com/barcode.ashx?data=${this.check.client_id}&code=&translate-esc=true'/>
-                                </div>
-                            </div>
-                        </div>`)
-                setTimeout(() => {
-                    winPrint.print()
-                }, 3000)
-                window.close()
             } catch (e) {
-                this.$toast.error(e.response?.data?.message || "Xatolik yuz berdi!", {
+                this.$toast.error(e || "Xatolik yuz berdi!", {
                     position: "top-right"
                 })
             } finally {
