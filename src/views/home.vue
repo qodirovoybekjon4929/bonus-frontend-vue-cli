@@ -36,7 +36,7 @@
             <div class="have-one-data" v-if="users.length <= 1">
                 <div>
                     <div style="width: 500px; height: 200px; transition: all 0.3s;" v-for="(user, index) of users"
-                        :key="index" class="one-user">
+                        :key="index" class="one-user" @click="sendUser(user)">
                         <div
                             style="width: 100%; height: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0, 0, 0, 0.068);">
                             <span style="font-weight: bold; font-size: 20px;">{{ user.fio }}</span>
