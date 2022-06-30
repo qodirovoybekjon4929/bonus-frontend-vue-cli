@@ -39,7 +39,10 @@
         <!-- page -->
         <div style="width: 100%; height: 100vh; padding: 10px;">
             <q-table style="box-shadow: 0px 0px 15px -12px black;" title="Tovar"
-                no-data-label="Ma'lumotlar mavjud emas!" :columns="columns" />
+                no-data-label="Ma'lumotlar mavjud emas!" :columns="columns" :rows="buyTable" hide-pagination />
+
+            <div>
+            </div>
         </div>
         <!-- page -->
     </div>
@@ -51,19 +54,19 @@
             </div>
 
             <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: red; color: #fff; transition: all 0.3s; margin-right: 10px"
-                class="n-button">
+                class="n-button" @click="clearBuyData()">
                 <q-icon name="delete_sweep" />
             </div>
 
             <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightseagreen; color: #fff; transition: all 0.3s"
-                class="n-button">
+                class="n-button" @click="showConfirmDialog()">
                 <q-icon name="done" />
             </div>
         </div>
 
         <div style="width: 50%; height: 100%; display: flex; align-items: center; justify-content: right;">
             <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightcoral; color: #fff; transition: all 0.3s"
-                class="n-button" @click="logOut()">
+                class="n-button" @click="logOutDialog = true">
                 <q-icon name="logout" />
             </div>
         </div>
@@ -285,6 +288,84 @@
 
             </q-card>
         </q-dialog>
+
+        <q-dialog v-model="clearDialog" persistent>
+            <q-card style="width: 500px; height: 300px">
+                <div style="width: 100%; height: 200px; padding: 10px; ">
+                    <div
+                        style="width: 100%; height: 100%; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 5px; padding: 5px">
+                        <span style="font-weight: bold; font-size: 30px;">
+                            Kiritilgan barcha ma'lumotlarni o'chirishga rozimisiz?
+                        </span>
+                    </div>
+                </div>
+                <div
+                    style="position: absolute; width: 100%; height: 80px; bottom: 0; display: flex; align-items: center; justify-content: right">
+                    <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightgreen; color: #fff; transition: all 0.3s; margin-right: 10px;"
+                        class="n-button" @click="clearData()">
+                        <q-icon name="done" />
+                    </div>
+
+                    <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightcoral; color: #fff; transition: all 0.3s; margin-right: 10px;"
+                        class="n-button" @click="clearDialog = false">
+                        <q-icon name="close" />
+                    </div>
+                </div>
+            </q-card>
+        </q-dialog>
+
+        <q-dialog v-model="confirmDialog" persistent>
+            <q-card style="width: 500px; height: 300px">
+                <div style="width: 100%; height: 200px; padding: 10px; ">
+                    <div
+                        style="width: 100%; height: 100%; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 5px; padding: 5px">
+                        <span style="font-weight: bold; font-size: 30px;">
+                            Kiritilgan barcha ma'lumotlarni tasdiqlaysizmi?
+                        </span>
+                    </div>
+                </div>
+                <div
+                    style="position: absolute; width: 100%; height: 80px; bottom: 0; display: flex; align-items: center; justify-content: right">
+                    <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightgreen; color: #fff; transition: all 0.3s; margin-right: 10px;"
+                        class="n-button" @click="confirmItem(this.buyTable, this.userData.id)">
+                        <q-icon name="done" />
+                    </div>
+
+                    <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightcoral; color: #fff; transition: all 0.3s; margin-right: 10px;"
+                        class="n-button" @click="confirmDialog = false">
+                        <q-icon name="close" />
+                    </div>
+                </div>
+            </q-card>
+        </q-dialog>
+
+        <q-dialog v-model="logOutDialog" persistent>
+            <q-card style="width: 500px; height: 300px">
+                <div style="width: 100%; height: 200px; padding: 10px; position: relative;">
+                    <div
+                        style="width: 100%; height: 100%; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 5px; padding: 5px">
+                        <span style="font-weight: bold; font-size: 30px;">
+                            Chiqishni tasdiqlaysizmi?
+                        </span>
+                        <br>
+                        <span style="color: red; position: absolute; bottom: 15px; right: 20px;">*Barcha ma'lumotlar
+                            tozalanib ketadi</span>
+                    </div>
+                </div>
+                <div
+                    style="position: absolute; width: 100%; height: 80px; bottom: 0; display: flex; align-items: center; justify-content: right">
+                    <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightgreen; color: #fff; transition: all 0.3s; margin-right: 10px;"
+                        class="n-button" @click="logOut()">
+                        <q-icon name="done" />
+                    </div>
+
+                    <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightcoral; color: #fff; transition: all 0.3s; margin-right: 10px;"
+                        class="n-button" @click="logOutDialog = false">
+                        <q-icon name="close" />
+                    </div>
+                </div>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
@@ -320,9 +401,7 @@ export default {
                     this.item.itemCode.item.fullSum = ""
                 }
             } else {
-                this.$toast.warning("Bizda bunday tovar mavjud emas!", {
-                    position: "top-right"
-                })
+                console.log("")
             }
         }
     },
@@ -330,6 +409,10 @@ export default {
     data() {
         return {
             name: "get-item-page",
+            logOutDialog: false,
+            confirmDialog: false,
+            clearDialog: false,
+            buyTable: [],
             item: {
                 itemCode: {
                     item: {},
@@ -344,11 +427,11 @@ export default {
             },
             columns: [
                 {
-                    name: 'name',
+                    name: 'id',
                     required: true,
                     label: 'Tovar kodi',
                     align: 'center',
-                    field: row => row.name,
+                    field: row => row.product_variant_id,
                     format: val => `${val}`,
                     sortable: true
                 },
@@ -357,25 +440,25 @@ export default {
                     required: true,
                     label: 'Tovar nomi',
                     align: 'center',
-                    field: row => row.name,
+                    field: row => row.itemName,
                     format: val => `${val}`,
                     sortable: true
                 },
                 {
-                    name: 'name',
+                    name: 'length',
                     required: true,
                     label: 'Tovar miqdori',
                     align: 'center',
-                    field: row => row.name,
+                    field: row => row.count,
                     format: val => `${val}`,
                     sortable: true
                 },
                 {
-                    name: 'name',
+                    name: 'sum',
                     required: true,
                     label: 'Tovar summasi',
                     align: 'center',
-                    field: row => row.name,
+                    field: row => row.selling_price,
                     format: val => `${val}`,
                     sortable: true
                 },
@@ -384,10 +467,44 @@ export default {
     },
 
     methods: {
+        confirmItem(items, id) {
+            console.log(id)
+            console.log(items)
+        },
+        showConfirmDialog() {
+            if (this.buyTable.length > 0) {
+                this.confirmDialog = true
+            } else {
+                this.$toast.warning("Sizda tasdiqlash uchun ma'lumotlar mavjud emas!", {
+                    position: "top-right"
+                })
+            }
+        },
+        clearData() {
+            this.buyTable = []
+            this.userData.bonus = localStorage.getItem("bonus")
+            this.clearDialog = false
+        },
+        clearBuyData() {
+            if (this.buyTable.length > 0) {
+                this.clearDialog = true
+            } else {
+                this.$toast.warning("Sizda o'chirish uchun ma'lumotlar mavjud emas!", {
+                    position: "top-right"
+                })
+            }
+        },
         checkData() {
             if (this.item.itemCode.item.fullSum) {
                 if (this.item.itemCode.check) {
-                    alert("success")
+                    let obj = {}
+                    obj.product_variant_id = this.item.itemCode.item.product_variant_id
+                    obj.itemName = this.item.itemCode.item.product_variant_title
+                    obj.count = this.item.itemLength.txt
+                    obj.selling_price = this.item.itemCode.item.fullSum
+                    this.userData.bonus -= this.item.itemCode.item.fullSum
+                    this.buyTable.push(obj)
+                    this.$store.dispatch("getItemsPage/hideBuyDialog")
                 } else {
                     this.$toast.warning("Sizning bonus summangiz yetarli emas!", {
                         position: "top-right"
@@ -413,6 +530,8 @@ export default {
                     }
                 })
                 this.item.itemCode.item = response.data
+                this.item.itemLength.txt = '1'
+                localStorage.setItem("bonus", this.userData.bonus)
             } catch (e) {
                 this.item.itemCode.item = {}
                 this.$toast.error(e.response.data.message || "Xatolik yuz berdi", {
@@ -450,6 +569,9 @@ export default {
             this.$store.dispatch("getItemsPage/hideBuyDialog")
         },
         goBuyPage() {
+            this.item.itemCode.txt = ""
+            this.item.itemLength.txt = ""
+            this.item.itemCode.item = {}
             this.$store.dispatch("getItemsPage/showBuyDialog")
         },
         async logOut() {

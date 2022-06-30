@@ -3,7 +3,7 @@ import axios from "../../axios"
 const state = {
     data: {
         buyDialogData: {
-            show: true
+            show: false
         },
         userData: {}
     }
