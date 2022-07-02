@@ -159,20 +159,26 @@ export default {
                     this.pin = ""
                     this.hidePin = ""
                 } else if (item.icon === "login") {
-                    try {
-                        Loading.show()
-                        const response = await axios.post("/api/consultants/sign-in", {
-                            password: this.pin
-                        })
-                        await localStorage.setItem("access_token", response.data.token)
-                        await this.$router.push("/")
-                        window.location.reload()
-                    } catch (e) {
-                        this.$toast.error(e.response?.data?.message || "Xatolik yuz berdi!", {
+                    if (this.pin.length > 0) {
+                        try {
+                            Loading.show()
+                            const response = await axios.post("/api/consultants/sign-in", {
+                                password: this.pin
+                            })
+                            await localStorage.setItem("access_token", response.data.token)
+                            await this.$router.push("/")
+                            window.location.reload()
+                        } catch (e) {
+                            this.$toast.error(e.response?.data?.message || "Xatolik yuz berdi!", {
+                                position: "top-right"
+                            })
+                        } finally {
+                            Loading.hide()
+                        }
+                    } else {
+                        this.$toast.warning("Iltimos parolni kiriting!", {
                             position: "top-right"
                         })
-                    } finally {
-                        Loading.hide()
                     }
                 }
             }

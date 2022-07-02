@@ -73,7 +73,7 @@ export default {
                 await winPrint.document.write(`<div>
                             <div style="width: 250px; height: 300px; border: 1px solid green; margin: auto; text-align: center;">
                                 <div style="margin-top: 10px;">
-                                    <span style="font-weight: bold;">ISHONCH DO'KONLAR TARMOG'I</span>
+                                    <span style="font-weight: bold;">"ISHONCH" DO'KONLAR TARMOG'I</span>
                                     <br>
                                     <span style="font-weight: bold; font-size: 30px;">BONUS</span>
                                     <br>
@@ -91,6 +91,7 @@ export default {
                         </div>`)
                 setTimeout(() => {
                     winPrint.print()
+                    winPrint.close()
                 }, 3000)
                 this.checkDialogData.show = false
             } catch (e) {

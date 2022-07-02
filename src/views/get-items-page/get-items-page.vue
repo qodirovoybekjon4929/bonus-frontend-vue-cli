@@ -42,6 +42,7 @@
                 no-data-label="Ma'lumotlar mavjud emas!" :columns="columns" :rows="buyTable" hide-pagination />
 
             <div>
+
             </div>
         </div>
         <!-- page -->
@@ -348,7 +349,8 @@
                             Chiqishni tasdiqlaysizmi?
                         </span>
                         <br>
-                        <span style="color: red; position: absolute; bottom: 15px; right: 20px;">*Barcha ma'lumotlar
+                        <span v-if="buyTable.length > 0"
+                            style="color: red; position: absolute; bottom: 15px; right: 20px;">*Barcha ma'lumotlar
                             tozalanib ketadi</span>
                     </div>
                 </div>
@@ -361,6 +363,84 @@
 
                     <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightcoral; color: #fff; transition: all 0.3s; margin-right: 10px;"
                         class="n-button" @click="logOutDialog = false">
+                        <q-icon name="close" />
+                    </div>
+                </div>
+            </q-card>
+        </q-dialog>
+
+        <q-dialog v-model="checkDialog" persistent>
+            <q-card style="width: 500px; min-height: 300px">
+                <div style="padding: 10px; width: 100%; text-align: center;">
+                    <span style="font-weight: bold; font-size: 20px">Ushbu amaliyot uchun check
+                        chiqarasizmi?</span>
+                </div>
+                <div style="width: 100%; height: 100vh;">
+                    <div id="table">
+                        <div
+                            style="width: 250px; min-height: 300px; border: 1px solid black; margin: auto; text-align: center; padding: 5px; margin-top: 10px;">
+                            <div style="margin-top: 10px;">
+                                <span style="font-weight: bold;">"ISHONCH" DO'KONLAR TARMOG'I</span>
+                                <br>
+                                <span style="font-weight: bold; font-size: 30px;">BONUS</span>
+                                <br>
+                                <div style="width: 100%; display: flex; justify-content: right;">
+                                    <span style="font-weight: bold">{{ userData.id }}</span>
+                                </div>
+                                <span style="font-weight: bold; font-size: 20px;">{{ userData.fio }}</span>
+                                <br>
+                                <br>
+                                <div>
+                                    <table id="customers"
+                                        style="font-family: sans-serif; border-collapse: collapse; width: 100%;">
+                                        <tr>
+                                            <th
+                                                style="border: 1px solid black; padding: 8px; padding-top: 12px; padding-bottom: 12px; text-align: left; background-color: #fff; color: black;">
+                                                Kod
+                                            </th>
+
+                                            <th
+                                                style="border: 1px solid black; padding: 8px; padding-top: 12px; padding-bottom: 12px; text-align: left; background-color: #fff; color: black;">
+                                                Tovar nomi
+                                            </th>
+
+                                            <th
+                                                style="border: 1px solid black; padding: 8px; padding-top: 12px; padding-bottom: 12px; text-align: left; background-color: #fff; color: black;">
+                                                Soni
+                                            </th>
+                                        </tr>
+
+                                        <tr v-for="(item, index) of buyTable" :key="index">
+                                            <td style="border: 1px solid black; padding: 8px;">
+                                                {{ item.product_variant_id }}
+                                            </td>
+
+                                            <td style="border: 1px solid black; padding: 8px;">
+                                                {{ item.itemName }}
+                                            </td>
+
+                                            <td style="border: 1px solid black; padding: 8px;">
+                                                {{ item.count }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div style="width: 100%; display: flex; justify-content: right; margin-top: 5px;">
+                                    <span>Masul: Bonus</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    style="width: 100%; position: -webkit-sticky; position: sticky; bottom: 0; display: flex; align-items: center; justify-content: right; padding: 15px; background: #fff;">
+                    <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightgreen; color: #fff; transition: all 0.3s; margin-right: 10px;"
+                        class="n-button" @click="getCheck()">
+                        <q-icon name="print" />
+                    </div>
+
+                    <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightcoral; color: #fff; transition: all 0.3s; margin-right: 10px;"
+                        class="n-button" @click="checkDialog = false">
                         <q-icon name="close" />
                     </div>
                 </div>
@@ -408,6 +488,8 @@ export default {
 
     data() {
         return {
+            checkDialog: false,
+            table: false,
             name: "get-item-page",
             logOutDialog: false,
             confirmDialog: false,
@@ -458,7 +540,7 @@ export default {
                     required: true,
                     label: 'Tovar summasi',
                     align: 'center',
-                    field: row => row.selling_price,
+                    field: row => parseInt(row.selling_price).toLocaleString().split(",").join(" ").toString(),
                     format: val => `${val}`,
                     sortable: true
                 },
@@ -466,8 +548,25 @@ export default {
         }
     },
 
+    created() {
+    },
+
     methods: {
+        getCheck() {
+            let table = document.querySelectorAll("#table")
+            let el = ""
+
+            table.forEach(e => el = e.outerHTML)
+
+            let winPrint = window.open("", "ABC")
+
+            winPrint.document.write(`${el}`)
+
+            winPrint.print()
+            winPrint.close()
+        },
         confirmItem(items, id) {
+            this.checkDialog = true
             console.log(id)
             console.log(items)
         },
@@ -558,7 +657,6 @@ export default {
             }
         },
         clickNum(msg) {
-            console.log(msg)
             if (this.item.itemCode.active) {
                 this.item.itemCode.txt += msg.toString()
             } else if (this.item.itemLength.active) {
