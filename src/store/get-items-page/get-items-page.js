@@ -41,6 +41,7 @@ const actions = {
                 }
             })
             commit("SET_BONUS", response.data.bonus)
+            localStorage.setItem("bonus", response.data.bonus)
         }catch(e) {
             return Promise.reject(e)
         }

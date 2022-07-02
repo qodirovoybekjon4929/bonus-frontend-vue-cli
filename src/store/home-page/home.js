@@ -18,6 +18,7 @@ const getters = {
     checkDialogData: (state) => state.data.checkDialogData
 }
 const mutations = {
+    CLEAR_USER: (state) => state.data.users = [],
     HIDE_CHECK_DIALOG: (state) => {
         state.data.checkDialogData.show = false
     },
@@ -32,6 +33,9 @@ const mutations = {
     }
 }
 const actions = {
+    clearUser({commit}) {
+        commit("CLEAR_USER")
+    },
     hideCheckDialog({commit}) {
         commit("HIDE_CHECK_DIALOG")
     },

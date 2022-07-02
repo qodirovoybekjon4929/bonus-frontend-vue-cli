@@ -440,7 +440,7 @@
                     </div>
 
                     <div style="width: 100px; height: 65px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: lightcoral; color: #fff; transition: all 0.3s; margin-right: 10px;"
-                        class="n-button" @click="checkDialog = false">
+                        class="n-button" @click="cancelCheckDialog()">
                         <q-icon name="close" />
                     </div>
                 </div>
@@ -540,7 +540,7 @@ export default {
                     required: true,
                     label: 'Tovar summasi',
                     align: 'center',
-                    field: row => parseInt(row.selling_price).toLocaleString().split(",").join(" ").toString(),
+                    field: row => parseInt(row.fullSum).toLocaleString().split(",").join(" ").toString(),
                     format: val => `${val}`,
                     sortable: true
                 },
@@ -552,6 +552,11 @@ export default {
     },
 
     methods: {
+        cancelCheckDialog() {
+            this.checkDialog = false
+            this.$store.dispatch("homePage/clearUser")
+            this.$router.push("/")
+        },
         getCheck() {
             let table = document.querySelectorAll("#table")
             let el = ""
@@ -564,9 +569,29 @@ export default {
 
             winPrint.print()
             winPrint.close()
+            this.checkDialog = false
+            this.$store.dispatch("homePage/clearUser")
+            this.$router.push("/")
         },
-        confirmItem(items, id) {
-            this.checkDialog = true
+        async confirmItem(items, id) {
+            try {
+                Loading.show()
+                const response = await axios.post("/api/product_delivery/save-bonus-product-variant", {
+                    client_id: id,
+                    items: items
+                })
+                this.$toast.success(response.data.message || "Ma'lumot muvoffaqiyatli saqlandi!", {
+                    position: "top-right"
+                })
+                this.confirmDialog = false
+                this.checkDialog = true
+            } catch (e) {
+                this.$toast.error(e.response?.data?.message || "Xatolik yuz berdi!", {
+                    position: "top-right"
+                })
+            } finally {
+                Loading.hide()
+            }
             console.log(id)
             console.log(items)
         },
@@ -600,7 +625,8 @@ export default {
                     obj.product_variant_id = this.item.itemCode.item.product_variant_id
                     obj.itemName = this.item.itemCode.item.product_variant_title
                     obj.count = this.item.itemLength.txt
-                    obj.selling_price = this.item.itemCode.item.fullSum
+                    obj.fullSum = this.item.itemCode.item.fullSum
+                    obj.selling_price = this.item.itemCode.item.selling_price
                     this.userData.bonus -= this.item.itemCode.item.fullSum
                     this.buyTable.push(obj)
                     this.$store.dispatch("getItemsPage/hideBuyDialog")
@@ -630,7 +656,6 @@ export default {
                 })
                 this.item.itemCode.item = response.data
                 this.item.itemLength.txt = '1'
-                localStorage.setItem("bonus", this.userData.bonus)
             } catch (e) {
                 this.item.itemCode.item = {}
                 this.$toast.error(e.response.data.message || "Xatolik yuz berdi", {
